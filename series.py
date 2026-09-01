@@ -172,8 +172,9 @@ def boas_1_13_22_plot(n_terms, filename=None):
 # Boas, Problem 1.16.1c
 def boas_1_16_1c(n_books_overhang):
     """Compute how many books can be stacked on a table with a given overhang."""
-    raise NotImplementedError("Student assignment not yet implemented.")
 
+    n_books = np.exp(2*n_books_overhang - np.euler_gamma)
+    return n_books
 
 
 # --- Landau --- #
@@ -189,4 +190,14 @@ def cos_apprx(x, rel_tol = 1e-8, max_iter = 100):
     x to the range [0, 2*pi].
 
     """
-    raise NotImplementedError("Student assignment not yet implemented.")
+    taylor = lambda x, n: (-1)**n * x**(2*n) / (math.factorial(2 * n))
+
+    x %= 2 * math.pi
+    
+    sum = 0
+    for i in range(max_iter):
+        sum += taylor(x, i)
+        
+        if abs(taylor(x, i) / sum) < rel_tol: break
+    
+    return sum, i
