@@ -8,8 +8,7 @@ import matplotlib.pyplot as plt
 # --- Boas --- #
 # Harmonic Series
 def harmonic(n_terms: int):
-    """
-    Compute the sum of the first n terms of the harmonic series.
+    """Computes the sum of the first n terms of the harmonic series.
     
     Parameters
     ----------
@@ -33,8 +32,7 @@ def harmonic(n_terms: int):
 def boas_1_13_4(
     x: float, rel_tol: float = 1e-8, max_iter: int = 100
 ) -> tuple[float, int]:
-    """
-    Compute the series of ln(1 + x).
+    """Computes the series of ln(1 + x).
     
     Parameters
     ----------
@@ -79,8 +77,7 @@ def boas_1_13_4(
 
 # Boas, Problem 1.13.22
 def boas_1_13_22(x, rel_tol = 1e-8, max_iter = 100):
-    """
-    Compute the sum of the series exp(x)/(1 - x).
+    """Computes the sum of the series exp(x)/(1 - x).
     
     Parameters
     ----------
@@ -114,26 +111,27 @@ def boas_1_13_22(x, rel_tol = 1e-8, max_iter = 100):
 def boas_1_13_22_plot(n_terms, filename=None):
     """Plot the first N terms of the series expansion of exp(x)/(1 - x)
 
-    This function generates a plot similar to the one in Boas, Figure 1.13.1
-    (but with all N approximations on a single plot).
+    Parameters
+    ----------
+    n_terms: int
+        The amount of terms to calculate the series to.
+    filename: string
+        The name of the output graph file. 
 
-    If filename is not None, save the generated figure to that filename.
-
+    Returns
+    -------
+    fig: object
+        The python object of the two compiled Maclaurin series graphs side by side.
     """
 
-    '''Making a basic factorial'''
     fact_n = 1
     for i in range(1, n + 1): fact_n *= i
     
     '''Creating the series expansion formulae.'''
     series_exp = lambda x, n: (x**n) / fact_n
     series = lambda x, n: series_exp(x, n) / (1 - x)
+
     
-    
-    '''
-    Plot for -2 to 2
-    '''
-        
     x_vals1 = np.linspace(-2, 2, 100)
     y_vals1 = series(x_vals1, n)
     
@@ -143,9 +141,6 @@ def boas_1_13_22_plot(n_terms, filename=None):
     ax1.set_ylabel('Expansion Value')
     ax1.set_title('Series Expansion from -2 to 2')
     
-    '''
-    Larger N Maclaurin Plots
-    '''
     
     fig2, ax2 = plt.subplots(figsize=(5, n))
     
@@ -171,7 +166,18 @@ def boas_1_13_22_plot(n_terms, filename=None):
 
 # Boas, Problem 1.16.1c
 def boas_1_16_1c(n_books_overhang):
-    """Compute how many books can be stacked on a table with a given overhang."""
+    """Compute how many books can be stacked on a table with a given overhang.
+    
+    Parameters
+    ----------
+    n_books_overhang: int
+        The amount of overhang in n book-lengths.
+        
+    Returns
+    -------
+    n_books: float
+        The amount of books that must be stacked to reach the requisite overhang.
+    """
 
     n_books = np.exp(2*n_books_overhang - np.euler_gamma)
     return n_books
@@ -183,11 +189,21 @@ def boas_1_16_1c(n_books_overhang):
 def cos_apprx(x, rel_tol = 1e-8, max_iter = 100):
     """Compute the approximation of cos(x) using the Taylor series expansion.
 
-    This function computes the Taylor series of cos(x) until the series converges
-    or maximum number of iterations is reached. The function returns the approximation
-    of cos(x) and the number of iterations used to compute the approximation and makes
-    use of the identity cos(x) = cos(x + 2*pi*n) for any integer n to reduce the input
-    x to the range [0, 2*pi].
+    Parameters
+    ----------
+    x: float
+        The value of x that the series should be computed for.
+    rel_tol: float
+        The relative tolerance of the function.
+    max_iter: int
+        The maximum allowed iterations for the function.
+
+    Returns
+    -------
+    sum: float
+        The taylor summation of the cosine approximation.
+    i: int
+        The total iterations taken to get down to the requisite error value.
 
     """
     taylor = lambda x, n: (-1)**n * x**(2*n) / (math.factorial(2 * n))
