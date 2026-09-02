@@ -1,4 +1,6 @@
 """Student assignment implementation file for complex analysis."""
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 # --- Student Assignment --- #
@@ -24,6 +26,7 @@ def complex_polar(z):
     
     return r, theta
 
+
 def nth_root(z, n):
     """Compute the n-th roots of a complex number.
 
@@ -48,7 +51,8 @@ def nth_root(z, n):
     roots = (r**(1 / n)) * (np.cos(angles) + 1j * np.sin(angles))
         
     return roots
-    
+
+
 # --- Boas --- #
 def complex_impedance(resistance, inductance, capacitance, omega):
     """Compute the complex impedance of a series RLC circuit.
@@ -72,6 +76,7 @@ def complex_impedance(resistance, inductance, capacitance, omega):
     
     z = resistance + 1j * (omega*inductance - 1 / (omega * capacitance))
     return z
+
 
 # See Boas Example 2.16 - Electricity
 def plot_rlc(resistance, inductance, capacitance, omega, time, max_current, filename=None):
@@ -97,20 +102,19 @@ def plot_rlc(resistance, inductance, capacitance, omega, time, max_current, file
     xl = omega * inductance
     xc = 1 / (omega * capacitance)
     impedance = np.sqrt(resistance**2 + (xl - xc)**2)
-    
+
     max_voltage = max_current * impedance
-    
+
     phi = np.arctan2((xl - xc), resistance)
-    
+
     current = max_current * np.cos(omega * time)
     voltage = max_voltage * np.cos(omega * time + phi)
-        
 
     fig, ax = plt.subplots()
     ax.plot(time, current)
     ax.plot(time, voltage)
-    
+
     fig.savefig(filename)
     plt.show()
-    
+
     return fig

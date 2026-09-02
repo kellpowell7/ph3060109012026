@@ -7,43 +7,49 @@ import matplotlib.pyplot as plt
 # --- Student Assignment --- #
 # --- Boas --- #
 # Harmonic Series
-def harmonic(n_terms: int):
+def harmonic(n_terms: int=1):
     """Computes the sum of the first n terms of the harmonic series.
-    
+
     Parameters
     ----------
     n_terms : int
         How many iterations of the summation will be run.
-         
+    
     Returns
     -------
     sum : float
         The nth partial sum of the harmonic series.
     """
+
+    if n_terms < 1:
+        raise ValueError('Cannot have negative number of terms.')
+
     if n_terms <= 1000:
         sum = 0
-        for i in range(1, n_terms +1):
+        for i in range(1, n_terms + 1):
             sum += (1 / i)
     else:
         sum = math.log(n_terms) + np.euler_gamma
 
+    return sum
+
 
 # Boas, 3rd Edition, Equation 1.13.4
 def boas_1_13_4(
-    x: float, rel_tol: float = 1e-8, max_iter: int = 100
+    x: float=1, rel_tol: float = 1e-8, max_iter: int = 100
 ) -> tuple[float, int]:
     """Computes the series of ln(1 + x).
-    
+
     Parameters
     ----------
-    
+
     x : float
         Value to be computed about.
     rel_tol : float
         The relative tolerance of the specific computation.
     max_iter : int
         The maximum amount of iterations to be carried out. 
-        
+ 
     Returns
     -------
     sum : float
@@ -51,34 +57,43 @@ def boas_1_13_4(
     i : int
         The complete amount of iterations taken for the computation.
     """
-    
+
+    if x == -1:
+        raise ValueError('Invalid input, asymptote present.')
+
     sum = 0
-    
-    taylor = lambda x, n: (-1)**(n - 1) * x ** n / n
-    div_taylor = lambda x, n: (-1)**(n - 1) / (n * x**n)
-    
+
+    def taylor(x, n):
+        return (-1)**(n - 1) * x ** n / n
+    def div_taylor(x, n):
+        return (-1)**(n - 1) / (n * x**n)
+
     if abs(x) <= 1:
         for i in range(1, max_iter + 1):
             sum += taylor(x, i)
         
-            if abs(sum - sum - taylor(x, i) / abs(sum)) < rel_tol: break
-            if i > max_iter: break
+            if abs(sum - sum - taylor(x, i) / abs(sum)) < rel_tol:
+                break
+            if i > max_iter:
+                break
         return sum, i
-    
+
     if abs(x) > 1:
         sum = np.log(x)
         for i in range(1, max_iter + 1):
             sum += div_taylor(x, i)
             
-            if abs(sum - sum - taylor(x, i) / abs(sum)) < rel_tol: break
-            if i > max_iter: break
+            if abs(sum - sum - taylor(x, i) / abs(sum)) < rel_tol:
+                break
+            if i > max_iter:
+                break
         return sum, i
 
 
 # Boas, Problem 1.13.22
-def boas_1_13_22(x, rel_tol = 1e-8, max_iter = 100):
+def boas_1_13_22(x: float=0.1, rel_tol: float=1e-8, max_iter: int=100):
     """Computes the sum of the series exp(x)/(1 - x).
-    
+
     Parameters
     ----------
 
@@ -95,16 +110,23 @@ def boas_1_13_22(x, rel_tol = 1e-8, max_iter = 100):
         The summation of the series according to the given inputs.
     """
 
-    sum = 0
+    if x == 1:
+        raise ValueError('Invalid input, asymptote present.')
 
-    taylor = lambda x, n: x**n / math.factorial(n)
+    series_sum = 1.0 
 
-    for i in range (1, max_iter + 1):
-        sum += taylor(x, i)
+    def taylor(x, n):
+        return x**n / math.factorial(n)
 
-        if abs(sum - sum - taylor(x, i) / abs(sum)) < rel_tol: break
-        if i > max_iter: break
-    return sum / (1 - x)
+    for i in range(1, max_iter + 1):
+        term = taylor(x, i)
+        series_sum += term
+        
+        # Proper relative tolerance check
+        if abs(term / series_sum) < rel_tol:
+            break
+
+    return series_sum / (1 - x)
 
 
 # Plots the first N terms of the series expansion of exp(x)/(1 - x)
@@ -123,25 +145,25 @@ def boas_1_13_22_plot(n_terms, filename=None):
     fig: object
         The python object of the two compiled Maclaurin series graphs side by side.
     """
-
     fact_n = 1
-    for i in range(1, n + 1): fact_n *= i
-    
-    '''Creating the series expansion formulae.'''
-    series_exp = lambda x, n: (x**n) / fact_n
-    series = lambda x, n: series_exp(x, n) / (1 - x)
+    for i in range(1, n_terms + 1): fact_n *= i
 
-    
+    '''Creating the series expansion formulae.'''
+    def series_exp(x, n):
+        return (x**n) / fact_n
+    def series(x, n_terms):
+        return series_exp(x, n_terms) / (1 - x)
+
     x_vals1 = np.linspace(-2, 2, 100)
-    y_vals1 = series(x_vals1, n)
-    
+    y_vals1 = series(x_vals1, n_terms)
+
     fig1, ax1 = plt.subplots()
-    ax1.plot(x_vals1, y_vals1, color = 'k')
+    ax1.plot(x_vals1, y_vals1, color='k')
     ax1.set_xlabel('X-Values')
     ax1.set_ylabel('Expansion Value')
     ax1.set_title('Series Expansion from -2 to 2')
-    
-    
+
+
     fig2, ax2 = plt.subplots(figsize=(5, n))
     
     for i in range(n):
@@ -150,9 +172,9 @@ def boas_1_13_22_plot(n_terms, filename=None):
         for x in x_vals2:
             approx_val = sum(series(x, i) for k in range(i + 1))
             y_approx.append(approx_val)
-        
+
         color_alias = f"C{i}"
-        ax2.plot(x_vals2, y_approx)
+        ax2.plot(x_vals2, y_approx, color=color_alias)
         ax2.set_ylim(-1e-6, 1e-6)
         ax2.set_xlabel('X-Values')
         ax2.set_ylabel('f(x) Values')
@@ -167,12 +189,12 @@ def boas_1_13_22_plot(n_terms, filename=None):
 # Boas, Problem 1.16.1c
 def boas_1_16_1c(n_books_overhang):
     """Compute how many books can be stacked on a table with a given overhang.
-    
+
     Parameters
     ----------
     n_books_overhang: int
         The amount of overhang in n book-lengths.
-        
+
     Returns
     -------
     n_books: float
@@ -186,7 +208,7 @@ def boas_1_16_1c(n_books_overhang):
 # --- Landau --- #
 # The following questions are from Landau 3.3.1
 # HOWEVER, these should be completed with cos instead of sin
-def cos_apprx(x, rel_tol = 1e-8, max_iter = 100):
+def cos_apprx(x, rel_tol=1e-8, max_iter=100):
     """Compute the approximation of cos(x) using the Taylor series expansion.
 
     Parameters
@@ -206,14 +228,15 @@ def cos_apprx(x, rel_tol = 1e-8, max_iter = 100):
         The total iterations taken to get down to the requisite error value.
 
     """
-    taylor = lambda x, n: (-1)**n * x**(2*n) / (math.factorial(2 * n))
+    def taylor(x, n):
+        return (-1)**n * x**(2*n) / (math.factorial(2 * n))
 
     x %= 2 * math.pi
-    
+
     sum = 0
     for i in range(max_iter):
         sum += taylor(x, i)
         
         if abs(taylor(x, i) / sum) < rel_tol: break
-    
+
     return sum, i
