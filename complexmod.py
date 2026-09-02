@@ -6,45 +6,111 @@
 def complex_polar(z):
     """Convert a complex number to polar form.
 
-    This function takes a complex number z and returns its polar form as a tuple
-    (r, theta), where r is the magnitude of z and theta is the angle in radians.
-
+    Parameters
+    ----------
+    z: np.complex128
+        Complex number for the function to evaluate.
+    
+    Returns
+    -------
+    r: float
+        The length of the vector specified.
+    theta: float
+        The angle of the vector, counterclockwise from x axis in radians.
     """
-    raise NotImplementedError("Student assignment not yet implemented.")
-
+    
+    r = np.abs(z)
+    theta = np.angle(z)
+    
+    return r, theta
 
 def nth_root(z, n):
     """Compute the n-th roots of a complex number.
 
-    This function takes a complex number z and an integer n, and returns
-    all of the  the n-th roots (see Boas 2.10) of z as a complex number
-    as a numpy array.
-
+    Parameters
+    ----------
+    z: np.complex128
+        Complex number for the function to evaluate.
+    n: int
+        The amount of roots to be found.
+    
+    Returns
+    -------
+    roots: tuple
+        A list of all nth roots of the complex number. 
     """
-    raise NotImplementedError("Student assignment not yet implemented.")
+    
+    r = np.abs(z)
+    theta = np.angle(z)
 
-
+    k = np.arange(n)
+    angles = (theta + 2 * np.pi * k) / n
+    roots = (r**(1 / n)) * (np.cos(angles) + 1j * np.sin(angles))
+        
+    return roots
+    
 # --- Boas --- #
 def complex_impedance(resistance, inductance, capacitance, omega):
     """Compute the complex impedance of a series RLC circuit.
 
-    This function takes the resistance R, inductance L, capacitance C, and angular frequency omega
-    of a series RLC circuit and returns the complex impedance Z as a complex number.
-
+    Parameters
+    ----------
+    resistance: float
+        The real portion of resistance within the circuit.
+    inductance: float
+        The inductance of the circuit.
+    capacitance: float
+        The capacitance of the circuit.
+    omega: float
+        The frequency of the current within the circuit.
+    
+    Returns
+    -------
+    z: np.complex128
+        The complex impedence of the circuit itself.
     """
-    raise NotImplementedError("Student assignment not yet implemented.")
-
+    
+    z = resistance + 1j * (omega*inductance - 1 / (omega * capacitance))
+    return z
 
 # See Boas Example 2.16 - Electricity
 def plot_rlc(resistance, inductance, capacitance, omega, time, max_current, filename=None):
     """Plot the current and voltage time series of a series RLC circuit.
 
-    This function takes the resistance R, inductance L, capacitance C, angular frequencies
-    omega, and time array and generates the voltage and current signal for the
-    series RLC circuit. The function also returns the current (first) and voltage (second)
-    signals as numpy arrays.
-
-    If filename is not None, save the generated figure to that filename.
-
+    Parameters
+    ----------
+    resistance: float
+        The resistance of the circuit.
+    inductance: float
+        The inductance of the circuit.
+    capacitance: float
+        The capacitance of the circuit.
+    omega: float
+        The angular frequency of the circuit's signal.
+    time: float
+        How long the time series should run.
+    max_current: float
+        The maximum amperage allowed within the function.
+    filename: string
+        The intended name for the output plot. 
     """
-    raise NotImplementedError("Student assignment not yet implemented.")
+    xl = omega * inductance
+    xc = 1 / (omega * capacitance)
+    impedance = np.sqrt(resistance**2 + (xl - xc)**2)
+    
+    max_voltage = max_current * impedance
+    
+    phi = np.arctan2((xl - xc), resistance)
+    
+    current = max_current * np.cos(omega * time)
+    voltage = max_voltage * np.cos(omega * time + phi)
+        
+
+    fig, ax = plt.subplots()
+    ax.plot(time, current)
+    ax.plot(time, voltage)
+    
+    fig.savefig(filename)
+    plt.show()
+    
+    return fig
